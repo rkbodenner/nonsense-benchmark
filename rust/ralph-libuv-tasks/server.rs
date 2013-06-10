@@ -4,7 +4,7 @@ pub use core::libc::*;
 fn sha256(msg: &str) -> ~str {
   let mut hash;
   unsafe {
-    let s = ~"echo " + msg + " | shasum -a 256";
+    let s = ~"echo -n " + msg + " | shasum -a 256";
     let file = str::as_c_str(s, { |cmd|
       str::as_c_str("r", { |mode|
         popen(cmd, mode)
@@ -26,10 +26,10 @@ fn work_it(msg: ~str) -> ~str {
   let mut nonce : uint = 0;
   loop {
     nonce += 1;
-    let hash = sha256(msg + uint::to_str(nonce));
+    let hash = sha256(msg + uint::to_str_radix(nonce, 16));
     if str::ends_with(hash, "00") { break }
   }
-  let out : ~str = msg + ":" + uint::to_str(nonce);
+  let out : ~str = msg + ":" + uint::to_str_radix(nonce, 16);
   out
 }
 
